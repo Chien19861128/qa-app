@@ -35,6 +35,11 @@ var validateUniqueEmail = function(value, callback) {
  */
 
 var UserSchema = new Schema({
+  slug: {
+    type: String,
+    unique: true,
+    required: true
+  },
   name: {
     type: String,
     required: true

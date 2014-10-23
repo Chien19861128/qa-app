@@ -7,11 +7,11 @@ angular.module('mean.system').config(['$stateProvider', '$urlRouterProvider',
     $urlRouterProvider.otherwise('/');
 
     // states for my app
-    $stateProvider
-      .state('home', {
-        url: '/',
-        templateUrl: 'system/views/index.html'
-      });
+    //$stateProvider
+    //  .state('home', {
+    //    url: '/',
+    //    templateUrl: 'system/views/index.html'
+    //  });
   }
 ]).config(['$locationProvider',
   function($locationProvider) {

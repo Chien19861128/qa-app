@@ -1,0 +1,23 @@
+<section data-ng-controller="SectionsController" data-ng-init="findUserAll()">
+    <form name="sectionForm" class="form-horizontal col-md-2 col-md-offset-5" role="form" data-ng-submit="create(sectionForm.$valid)" novalidate>
+        <div class="form-group">
+            <button type="submit" class="btn btn-info">Start Section</button>
+        </div>
+    </form>
+        <ul class="sections unstyled col-md-12">
+            <li data-ng-repeat="section in sections">
+                <h3>
+                    <a data-ng-href="#!/sections/{{section._id}}">{{section.title}} - {{section.created | date:'short'}}</a>
+                    <span data-ng-if="hasAuthorization(section)">
+                        <a class="btn" href="/#!/sections/{{section._id}}/edit">
+                            <i class="glyphicon glyphicon-edit"></i>
+                        </a>
+                        <a class="btn" data-ng-click="remove(section);">
+                            <i class="glyphicon glyphicon-trash"></i>
+                        </a>
+                    </span>
+                </h3>
+                <div>{{section.content}}</div>
+            </li>
+        </ul>
+</section>

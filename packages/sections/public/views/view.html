@@ -1,0 +1,46 @@
+<section data-ng-controller="SectionsController" data-ng-init="findOne()">
+    <div class="col-md-8">
+        <span data-ng-show="hasAuthorization(section)">
+             <form name="sectionForm" role="form" data-ng-submit="update(sectionForm.$valid)" novalidate>
+                 <div class="form-group" ng-class="{ 'has-error' : submitted && sectionForm.title.$invalid }">
+                     <input name="title" type="text" class="form-control input-lg" data-ng-model="section.title" id="title" placeholder="Section Title" required>
+                     <div ng-show="submitted && sectionForm.title.$invalid" class="help-block">
+                         <p ng-show="sectionForm.title.$error.required">Title is required</p>
+                     </div>
+                 </div>
+             </form>
+        </span>
+        <h3 data-ng-hide="hasAuthorization(section)">{{section.title}}</h3> 
+        <!--by {{section.user.name}} - {{section.created | date:'short'}}-->
+        <span data-ng-show="global.authenticated">
+            <form name="sectionIssueForm" role="form" data-ng-submit="createIssue(sectionIssueForm.$valid)" novalidate>
+                <div class="form-group" ng-class="{ 'has-error' : submitted && sectionIssueForm.newIssue.$invalid }">
+                    <textarea name="newIssue" data-ng-model="newIssue" id="newIssue" cols="30" rows="4" placeholder="Be sure to check for duplicate issues before posting!" class="form-control" required></textarea>
+                    <div ng-show="submitted && sectionIssueForm.newIssue.$invalid" class="help-block col-md-2">
+                        <p ng-show="sectionIssueForm.newIssue.$error.required">Cannot be blank</p>
+                    </div>
+
+                </div>
+                <button type="submit" class="btn btn-info">Submit</button>
+            </form>
+        </span>
+    </div>
+    <div class="col-md-4" ng-bind-html="section.qr_code"></div>
+    <div class="col-md-12" data-ng-repeat="issue in section.issues | filter:newIssue | orderBy:'popularity':!reverse">
+        <div class="col-md-1">
+            <a class="btn btn-sm" data-ng-click="upvoteIssue(issue.slug);" data-ng-show="issue.can_upvote">
+                <i class="glyphicon glyphicon-chevron-up"></i>
+            </a>
+            <div style="width:34px;" data-ng-hide="issue.can_upvote">&nbsp</div>
+            <div style="text-align:center;width:34px;">{{issue.popularity}}</div>
+            <a class="btn btn-sm" data-ng-click="downvoteIssue(issue.slug);" data-ng-show="issue.can_downvote">
+                <i class="glyphicon glyphicon-chevron-down"></i>
+            </a>
+            <div style="width:34px;" data-ng-hide="issue.can_downvote">&nbsp</div>
+        </div>
+        <div class="jumbotron col-md-11" style="padding-left:20px;padding-right:20px;padding-top:5px;padding-bottom:5px;margin-top:5px;margin-bottom:0px;text-align:left;">
+            <h5>{{issue.title}}</h5>
+        </div>
+        <small>by {{issue.user_slug}}</small>
+    </div>
+</section>

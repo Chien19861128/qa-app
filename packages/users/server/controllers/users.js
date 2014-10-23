@@ -4,12 +4,13 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-  User = mongoose.model('User'),
-  async = require('async'),
-  config = require('meanio').loadConfig(),
-  crypto = require('crypto'),
-  nodemailer = require('nodemailer'),
-  templates = require('../template');
+    User = mongoose.model('User'),
+    async = require('async'),
+    config = require('meanio').loadConfig(),
+    crypto = require('crypto'),
+    nodemailer = require('nodemailer'),
+    templates = require('../template'),
+    slug = require('slug');
 
 /**
  * Auth callback
@@ -57,6 +58,8 @@ exports.create = function(req, res, next) {
   req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
   req.assert('username', 'Username cannot be more than 20 characters').len(1, 20);
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+    
+  user.slug = slug(user.username);
 
   var errors = req.validationErrors();
   if (errors) {
