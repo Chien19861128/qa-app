@@ -2,6 +2,7 @@
 
 module.exports = {
   db: 'mongodb://localhost/qaapp-dev',
+  //db: 'mongodb://nodejitsu:e0b737c9d532fc27e1e753a25a4f823e@troup.mongohq.com:10001/nodejitsudb3924701379',
   mongoose: {
     debug: true
   },
