@@ -29,12 +29,12 @@ module.exports = {
     */
   },
   app: {
-    name: 'Ask On'
+    name: 'AskOn'
   },
   facebook: {
-    clientID: 'APP_ID',
-    clientSecret: 'APP_SECRET',
-    callbackURL: 'http://localhost:3000/auth/facebook/callback'
+    clientID: '1506076563009916',
+    clientSecret: 'eba1e517f80f8eb099e6baab0b1bcb57',
+    callbackURL: 'http://askon.nodejitsu.com'
   },
   twitter: {
     clientID: 'CONSUMER_KEY',

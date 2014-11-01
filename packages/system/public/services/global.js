@@ -1,19 +1,26 @@
 'use strict';
 
 //Global service for global variables
-angular.module('mean.system').factory('Global', [
+angular.module('mean.system').factory('Global', ['$rootScope', function($rootScope) {
 
-  function() {
-    var _this = this;
-    _this._data = {
-      user: window.user,
-      authenticated: false,
-      isAdmin: false
+    return {
+        getData: function() {
+            var _this = this;
+            _this._data = {
+                user: window.user,
+                authenticated: false,
+                isAdmin: false
+            };
+            if (window.user && window.user.roles) {
+                _this._data.authenticated = window.user.roles.length;
+                _this._data.isAdmin = window.user.roles.indexOf('admin') !== -1;
+            } else if ($rootScope.user) {
+                _this._data.authenticated = !! $rootScope.user;
+                _this._data.user = $rootScope.user;   
+                _this._data.isAdmin = $rootScope.user.roles.indexOf('admin') !== -1;
+            }
+            
+            return _this._data;
+        }
     };
-    if (window.user && window.user.roles) {
-      _this._data.authenticated = window.user.roles.length;
-      _this._data.isAdmin = window.user.roles.indexOf('admin') !== -1;
-    }
-    return _this._data;
-  }
-]);
+}]);

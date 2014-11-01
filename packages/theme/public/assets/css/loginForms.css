@@ -54,11 +54,11 @@ background: url("/theme/assets/img/bg.png");
     position: relative;
 }
 
-.main-form {
+/*.main-form {
     width: 748px;
     height: 435px;
     margin-left: -374px;
-}
+}*/
 
 .main-form.register-form {
     height: 622px;

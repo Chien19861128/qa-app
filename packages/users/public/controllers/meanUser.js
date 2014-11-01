@@ -9,7 +9,7 @@ angular.module('mean.users')
       // This object will contain list of available social buttons to authorize
       $scope.socialButtons = {};
       $scope.socialButtonsCounter = 0;
-      $scope.global = Global;
+      $scope.global = Global.getData();
       $http.get('/get-config')
         .success(function(config) {
           for (var conf in config) {
@@ -26,7 +26,7 @@ angular.module('mean.users')
     function($scope, $rootScope, $http, $location, Global) {
       // This object will be filled by the form
       $scope.user = {};
-      $scope.global = Global;
+      $scope.global = Global.getData();
       $scope.global.registerForm = false;
       $scope.input = {
         type: 'password',
@@ -74,7 +74,7 @@ angular.module('mean.users')
   .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
     function($scope, $rootScope, $http, $location, Global) {
       $scope.user = {};
-      $scope.global = Global;
+      $scope.global = Global.getData();
       $scope.global.registerForm = true;
       $scope.input = {
         type: 'password',
@@ -129,7 +129,7 @@ angular.module('mean.users')
   .controller('ForgotPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
     function($scope, $rootScope, $http, $location, Global) {
       $scope.user = {};
-      $scope.global = Global;
+      $scope.global = Global.getData();
       $scope.global.registerForm = false;
       $scope.forgotpassword = function() {
         $http.post('/forgot-password', {
@@ -147,7 +147,7 @@ angular.module('mean.users')
   .controller('ResetPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', '$stateParams', 'Global',
     function($scope, $rootScope, $http, $location, $stateParams, Global) {
       $scope.user = {};
-      $scope.global = Global;
+      $scope.global = Global.getData();
       $scope.global.registerForm = false;
       $scope.resetpassword = function() {
         $http.post('/reset/' + $stateParams.tokenId, {

@@ -6,12 +6,12 @@
             </form>
         </span>
         <p class="sections unstyled col-md-12">
-            <h3>Recent QA Sections</h3>
+            <h3>Recent Asking Sections</h3>
             <div data-ng-repeat="section in sections">
                 <h3>
                     <a data-ng-href="#!/sections/{{section.slug}}">{{section.title}}</a>
                 </h3>
-                by {{section.user.name}} - {{section.created | date:'short'}}
+                by {{section.user_slug}} - {{section.created | date:'short'}}
             </div>
         </p>
     </section>

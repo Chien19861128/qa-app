@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     _ = require('lodash'),
     slug = require('slug'),
+    uslug = require('uslug'),
     qr = require('qr-image');
 //var util = require('util');
 
@@ -72,7 +73,10 @@ exports.create = function(req, res) {
                 section.title = 'Unnamed';
             }
                                 
-            section.slug = slug(section.title);
+            console.log('[title]'+section.title);
+            console.log('[slug]'+slug(section.title));
+            console.log('[uslug]'+uslug(section.title));
+            section.slug = uslug(section.title);
             section.user_slug = req.user.slug;
             //section.user = req.user;
 
@@ -104,7 +108,11 @@ exports.update = function(req, res) {
         });
     } else {
         section = _.extend(section, req.body);
-        section.slug = slug(section.title);
+                                
+            console.log('[title]'+section.title);
+            console.log('[slug]'+slug(section.title));
+            console.log('[uslug]'+uslug(section.title));
+        section.slug = uslug(section.title);
 
         section.save(function(err) {
             if (err) {
@@ -204,6 +212,7 @@ exports.userAll = function(req, res) {
  * Add Issue
  */
 exports.createIssue = function(req, res) {   
+    console.log('[req.params.sectionSlug]'+req.params.sectionSlug);
     Section.findOne({
         slug: req.params.sectionSlug
     })
@@ -212,7 +221,7 @@ exports.createIssue = function(req, res) {
         if (!section) return new Error('Failed to load Section');
 	    section.issues.push({
 			title: req.body.title,
-            slug: slug(req.body.title),
+            slug: uslug(req.body.title),
             user_slug: req.user.slug
 		});
                                 

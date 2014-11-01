@@ -7,7 +7,7 @@ module.exports = {
     debug: true
   },
   app: {
-    name: 'QA App'
+    name: 'AskOn'
   },
   facebook: {
     clientID: 'DEFAULT_APP_ID',
