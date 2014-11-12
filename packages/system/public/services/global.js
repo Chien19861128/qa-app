@@ -17,7 +17,8 @@ angular.module('mean.system').factory('Global', ['$rootScope', function($rootSco
             } else if ($rootScope.user) {
                 _this._data.authenticated = !! $rootScope.user;
                 _this._data.user = $rootScope.user;   
-                _this._data.isAdmin = $rootScope.user.roles.indexOf('admin') !== -1;
+                if ($rootScope.user.roles)
+                    _this._data.isAdmin = $rootScope.user.roles.indexOf('admin') !== -1;
             }
             
             return _this._data;

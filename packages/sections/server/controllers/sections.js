@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
     Section = mongoose.model('Section'),
     User = mongoose.model('User'),
     _ = require('lodash'),
-    slug = require('slug'),
+    //slug = require('slug'),
     uslug = require('uslug'),
     qr = require('qr-image');
 //var util = require('util');
@@ -54,46 +54,22 @@ exports.user = function(req, res, next, slug) {
 exports.create = function(req, res) {
     var section = new Section(req.body);
     
-    if (req.body.title && 0 === req.body.title.indexOf('Unnamed')) {
-        return res.json(500, {
-            error: 'Cannot title the section Unnamed'
-        });
-    } else {
-        Section.findOne({
-            title: new RegExp('^Unnamed')
-        }).sort('-created').exec(function(err, unnamed_section) {
-            if (unnamed_section) {
-                var seqno = parseInt(unnamed_section.title.replace('Unnamed', ''), 10);
-                
-                if (isNaN(seqno)) seqno = 1;
-                else seqno += 1;
-                
-                section.title = 'Unnamed' + seqno;
-            } else {
-                section.title = 'Unnamed';
-            }
-                                
-            console.log('[title]'+section.title);
-            console.log('[slug]'+slug(section.title));
-            console.log('[uslug]'+uslug(section.title));
-            section.slug = uslug(section.title);
-            section.user_slug = req.user.slug;
+    var d = new Date();
+    var curr_utc_date = d.getUTCFullYear() + '-' + d.getUTCMonth() + '-' + d.getUTCDate()  + ' ' + d.getUTCHours() + ':' + d.getUTCMinutes() + ':' + d.getUTCSeconds();
+        
+    section.title = req.user.name + ' ' + curr_utc_date;
+    section.slug = uslug(section.title);
+    section.user_slug = req.user.slug;
             //section.user = req.user;
 
-            section.save(function(err) {
-                if (err) {
-                    console.log('[err]'+err);
-                    return res.status(500).json({
-                        error: 'Cannot save the section'
-                    });
-                }
-                res.json(section);
-
+    section.save(function(err) {
+        if (err) {
+            return res.status(500).json({
+                error: 'Cannot save the section'
             });
-            
-        });
-        
-    }
+        }
+        res.json(section);
+    });
 };
 
 /**
@@ -101,28 +77,18 @@ exports.create = function(req, res) {
  */
 exports.update = function(req, res) {
     var section = req.section;
-    
-    if (0 === req.body.title.indexOf('Unnamed')) {
-        return res.json(500, {
-            error: 'Cannot title the section Unnamed'
-        });
-    } else {
-        section = _.extend(section, req.body);
+    section = _.extend(section, req.body);
                                 
-            console.log('[title]'+section.title);
-            console.log('[slug]'+slug(section.title));
-            console.log('[uslug]'+uslug(section.title));
-        section.slug = uslug(section.title);
+    section.slug = uslug(section.title);
 
-        section.save(function(err) {
-            if (err) {
-                return res.json(500, {
-                    error: 'Cannot update the section'
-                });
-            }
-            res.json(section);
-        });
-    }
+    section.save(function(err) {
+        if (err) {
+            return res.json(500, {
+                error: 'Cannot update the section'
+            });
+        }
+        res.json(section);
+    });
 };
 
 /**
@@ -153,7 +119,7 @@ exports.show = function(req, res) {
         if (err) return err;
         if (!section) return new Error('Failed to load section ' + req.params.sectionSlug);
         
-        section.qr_code = qr.imageSync('http://localhost:3000/#!/sections/' + section.slug, { type: 'svg' });
+        section.qr_code = qr.imageSync('http://askon.nodejitsu.com/#!/sections/' + section.slug, { type: 'svg' });
         res.json(section);
     });
 };
@@ -179,13 +145,28 @@ exports.recentSection = function(req, res) {
  * List of Sections
  */
 exports.all = function(req, res) {
-    Section.find().sort('-created').populate('user', 'name username').exec(function(err, sections) {
+    
+    var query = {};
+    
+    if (req.query.searchSection) {
+        query = {
+            title: new RegExp(req.query.searchSection, 'i')
+        };
+    }
+    
+    Section.find(query).sort('-created').populate('user', 'name username').limit(20).exec(function(err, sections) {
         if (err) {
             return res.json(500, {
                 error: 'Cannot list the sections'
             });
         }
-        res.json(sections);
+        var result = {
+            attemptedUrl: req.session.attemptedUrl,
+            sections: sections
+        };
+        
+        req.session.attemptedUrl = '/';
+        res.json(result);
 
     });
 };
@@ -202,6 +183,7 @@ exports.userAll = function(req, res) {
                 error: 'Cannot list the sections'
             });
         }
+        
         res.json(sections);
 
     });
@@ -212,13 +194,20 @@ exports.userAll = function(req, res) {
  * Add Issue
  */
 exports.createIssue = function(req, res) {   
-    console.log('[req.params.sectionSlug]'+req.params.sectionSlug);
     Section.findOne({
         slug: req.params.sectionSlug
     })
     .exec(function (err, section) {
         if (err) return err;
         if (!section) return new Error('Failed to load Section');
+        
+        for (var i in section.issues) {
+            if (section.issues[i].title === req.body.title) {
+                section.error = 'Duplicate issue';
+                return res.jsonp(section);
+            }
+        }
+        
 	    section.issues.push({
 			title: req.body.title,
             slug: uslug(req.body.title),
@@ -236,6 +225,40 @@ exports.createIssue = function(req, res) {
         });
     });
 };
+
+/**
+ * Answered Issue
+ */
+exports.answeredIssue = function(req, res) {
+    
+    var this_i;
+    
+    for (var i in req.section.issues) {
+        
+        if (req.section.issues[i].slug === req.params.issueSlug) {
+            this_i = i;
+            break;
+        }
+    }
+    
+    if (req.user.slug===req.section.user_slug || req.user.slug===req.section.issues[this_i].user_slug) {
+        req.section.issues[this_i].answered = new Date();
+    
+        req.section.save(function(err, section) {
+            if (err) {
+                return res.status(500).json({
+                    error: 'Cannot mark issue answered'
+                });
+            } else { 
+                return res.jsonp(section);
+            }
+        });
+    } else {
+        return res.status(500).json({
+            error: 'Cannot mark issue answered'
+        });
+    }
+}; 
 
 /**
  * Upvote Issue

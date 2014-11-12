@@ -1,18 +1,37 @@
-<div class="jumbotron">
-    <section data-ng-controller="SectionsController" data-ng-init="find()">
+<section data-ng-controller="SectionsController" data-ng-init="find()">
+    <div class="col-sm-3 col-xs-12 pull-right">
         <span data-ng-show="global.authenticated">
-            <form name="sectionForm" role="form" data-ng-submit="create(sectionForm.$valid)" novalidate>
-                <button type="submit" class="btn btn-info">New Section</button>
-            </form>
+            <div style="margin-bottom:12px;">
+                <form name="sectionForm" role="form" data-ng-submit="create(sectionForm.$valid)" novalidate>
+                    <button type="submit" class="btn btn-lg btn-success center-block" ng-disabled="buttonDisabled" style="width:100%;margin-left:0px;margin-right:0px;">New Section</button>
+                </form>
+            </div>
         </span>
-        <p class="sections unstyled col-md-12">
-            <h3>Recent Asking Sections</h3>
-            <div data-ng-repeat="section in sections">
+        <div class="col-sm-12" style="margin-bottom:45px;padding-left:0px;padding-right:0px;">
+            <form name="searchForm" role="form" data-ng-submit="find()" novalidate>
+                <div class="col-sm-12 col-xs-8" style="padding-left:0px;padding-right:0px;">
+                    <input name="searchSection" type="text" class="form-control input-md" data-ng-model="searchSection" id="searchSection" placeholder="Type:filter Enter:search" required ng-disabled="buttonDisabled">
+                </div>
+                <div class="col-xs-4 visible-xs">
+                     <button type="submit" class="btn btn-info" ng-disabled="buttonDisabled" style="width:100%;">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="jumbotron col-sm-9 col-xs-12 pull-left">
+        <p class="sections unstyled">
+            <div>
+                <h3 data-ng-show="!searchSection">Recent Q&A Sections</h3>
+                <h3 data-ng-hide="!searchSection">"{{searchSection}}" Results</h3>
+            </div>
+            <div data-ng-repeat="section in sections | filter:searchSection">
                 <h3>
                     <a data-ng-href="#!/sections/{{section.slug}}">{{section.title}}</a>
                 </h3>
                 by {{section.user_slug}} - {{section.created | date:'short'}}
             </div>
         </p>
-    </section>
-</div>
+        <h5 data-ng-show="!sections || sections.length"><br>-<br>Can't find your section? Try search!</h5>
+        <h4 data-ng-hide="!sections || sections.length">No results</h4>
+    </div>
+</section>

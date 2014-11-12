@@ -1,19 +1,23 @@
 <section data-ng-controller="SectionsController" data-ng-init="findOne()">
-    <div class="col-sm-8">
+    <div class="col-sm-9" style="padding-left:0px;">
         <span data-ng-show="hasAuthorization(section)">
              <form name="sectionForm" role="form" data-ng-submit="update(sectionForm.$valid)" novalidate>
-                 <div class="form-group" ng-class="{ 'has-error' : submitted && sectionForm.title.$invalid }">
-                     <input name="title" type="text" class="form-control input-lg" data-ng-model="section.title" id="title" placeholder="Section Title" required>
+                 <div class="col-sm-12 col-xs-8 form-group" ng-class="{ 'has-error' : submitted && sectionForm.title.$invalid }" style="padding-left:0px;padding-right:0px;">
+                     <input name="title" type="text" class="form-control input-lg" data-ng-model="section.title" id="title" placeholder="Section Title" required ng-disabled="buttonDisabled">
                      <div ng-show="submitted && sectionForm.title.$invalid" class="help-block">
                          <p ng-show="sectionForm.title.$error.required">Title is required</p>
                      </div>
                  </div>
-             </form>
+                 <div class="col-xs-4 visible-xs">
+                     <button type="submit" class="btn btn-info" ng-disabled="buttonDisabled">Rename</button>
+                </div>
+            </form>
         </span>
         <h3 data-ng-hide="hasAuthorization(section)">{{section.title}}</h3> 
         <!--by {{section.user.name}} - {{section.created | date:'short'}}-->
         <span data-ng-show="global.authenticated">
             <form name="sectionIssueForm" role="form" data-ng-submit="createIssue(sectionIssueForm.$valid)" novalidate>
+                <div class="alert alert-danger animated fadeIn" ng-show="error">{{error}}</div>
                 <div class="form-group" ng-class="{ 'has-error' : submitted && sectionIssueForm.newIssue.$invalid }">
                     <textarea name="newIssue" data-ng-model="newIssue" id="newIssue" cols="30" rows="4" placeholder="Type here to filter.&#10;Be sure to check for duplicate issues before posting!" class="form-control" required></textarea>
                     <div ng-show="submitted && sectionIssueForm.newIssue.$invalid" class="help-block col-sm-2">
@@ -21,31 +25,43 @@
                     </div>
 
                 </div>
-                <button type="submit" class="btn btn-info col-sm-2">Submit</button>
-                <label class="col-sm-offset-6 col-sm-4" style="margin-top:15px;">
+                <button type="submit" class="btn btn-success col-sm-4" ng-disabled="buttonDisabled">New Question</button>
+                <label class="col-sm-offset-4 col-sm-4" style="margin-top:15px;">
                     <input type="checkbox" data-ng-model="autorefresh" ng-change="findOne(autorefresh)"> <small>auto refresh</small>
                 </label>
             </form>
         </span>
-    </div>
-    <div class="col-sm-4 hidden-xs" ng-bind-html="section.qr_code"></div>
-    <div class="col-sm-12" data-ng-repeat="issue in section.issues | filter:newIssue | orderBy:'popularity':!reverse">
-        <div class="col-sm-1 col-xs-2">
-            <a class="btn btn-sm" style="padding-bottom:0px" data-ng-click="upvoteIssue(issue.slug);" data-ng-show="issue.can_upvote">
-                <i class="glyphicon glyphicon-chevron-up"></i>
-            </a>
-            <div style="width:34px;" data-ng-hide="issue.can_upvote">&nbsp</div>
-            <div style="text-align:center;width:34px;">{{issue.popularity}}</div>
-            <a class="btn btn-sm" style="padding-top:0px" data-ng-click="downvoteIssue(issue.slug);" data-ng-show="issue.can_downvote">
-                <i class="glyphicon glyphicon-chevron-down"></i>
-            </a>
-            <div style="width:34px;" data-ng-hide="issue.can_downvote">&nbsp</div>
-        </div>
-        <div class="col-sm-11 col-xs-10">
-            <div class="jumbotron" style="padding-left:20px;padding-right:20px;padding-top:5px;padding-bottom:5px;margin-top:5px;margin-bottom:0px;text-align:left;">
-                <h5>{{issue.title}} </h5>
+        <div data-ng-repeat="issue in section.unanswered_issues | filter:newIssue | orderBy:'popularity':!reverse">
+            <div class="col-sm-1 col-xs-2">
+                <a class="btn btn-sm" style="padding-bottom:0px" data-ng-click="upvoteIssue(issue.slug);" data-ng-show="issue.can_upvote">
+                    <i class="glyphicon glyphicon-chevron-up"></i>
+                </a>
+                <div style="width:34px;" data-ng-hide="issue.can_upvote">&nbsp</div>
+                <div style="text-align:center;width:34px;">{{issue.popularity}}</div>
+                <a class="btn btn-sm" style="padding-top:0px" data-ng-click="downvoteIssue(issue.slug);" data-ng-show="issue.can_downvote">
+                    <i class="glyphicon glyphicon-chevron-down"></i>
+                </a>
+                <div style="width:34px;" data-ng-hide="issue.can_downvote">&nbsp</div>
             </div>
-            <small>by {{issue.user_slug}}</small>
+            <div class="col-sm-11 col-xs-10" style="padding-left:0px;padding-right:0px;">
+                <div class="jumbotron" style="padding-left:20px;padding-right:20px;padding-top:5px;padding-bottom:5px;margin-top:5px;margin-bottom:0px;text-align:left;">
+                    <h4>{{issue.title}}</h4>
+                </div>
+                <small>by {{issue.user_slug}} </small><button type="submit" class="btn btn-xs btn-success pull-right" ng-disabled="buttonDisabled"  data-ng-click="markAnswered(issue.slug);" data-ng-show="issue.can_mark_answered">mark answered</button>
+            </div>
         </div>
+    </div>
+    <div class="col-sm-3 hidden-xs" style="padding-left:0px;padding-right:0px;">
+        <div ng-bind-html="section.qr_code"></div>
+        <table class="table">
+            <thead>
+                <tr><th>Answered</th></tr>
+            </thead>
+            <tbody>
+                <tr data-ng-repeat="answered_issue in section.answered_issues | filter:newIssue | orderBy:'answered':!reverse">
+                    <th>{{answered_issue.title}}</th>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </section>

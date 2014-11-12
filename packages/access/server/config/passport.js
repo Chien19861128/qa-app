@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   LinkedinStrategy = require('passport-linkedin').Strategy,
   User = mongoose.model('User'),
+  uslug = require('uslug'),
   config = require('meanio').loadConfig();
 
 module.exports = function(passport) {
@@ -72,7 +73,8 @@ module.exports = function(passport) {
         }
         user = new User({
           name: profile.displayName,
-          username: profile.username,
+          username: profile.username + '_twitter',
+          slug: uslug(profile.username + '_twitter'),
           provider: 'twitter',
           twitter: profile._json,
           roles: ['authenticated']
@@ -80,7 +82,7 @@ module.exports = function(passport) {
         user.save(function(err) {
           if (err) {
             console.log(err);
-            return done(null, false, {message: 'Twitter login failed, email already used by other login strategy'});
+            return done(err, false, {message: 'Twitter login failed, email already used by other login strategy'});
           } else {
             return done(err, user);
           }
@@ -105,10 +107,20 @@ module.exports = function(passport) {
         if (user) {
           return done(err, user);
         }
+          
+        var fb_username;
+          
+        if (profile.username) {
+            fb_username = profile.username + '_facebook';
+        } else {
+            fb_username = profile.emails[0].value.split('@')[0] + '_facebook';
+        }
+          
         user = new User({
           name: profile.displayName,
           email: profile.emails[0].value,
-          username: profile.username || profile.emails[0].value.split('@')[0],
+          username: fb_username,
+          slug: uslug(fb_username),
           provider: 'facebook',
           facebook: profile._json,
           roles: ['authenticated']
@@ -116,7 +128,7 @@ module.exports = function(passport) {
         user.save(function(err) {
           if (err) {
             console.log(err);
-            return done(null, false, {message: 'Facebook login failed, email already used by other login strategy'});
+            return done(err, false, {message: 'Facebook login failed, email already used by other login strategy'});
           } else {
             return done(err, user);
           }

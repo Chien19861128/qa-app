@@ -4,13 +4,16 @@ var clientIdProperty = 'clientID',
   defaultPrefix = 'DEFAULT_';
 
 angular.module('mean.users')
-  .controller('AuthCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-    function($scope, $rootScope, $http, $location, Global) {
+  .controller('AuthCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global', 'Auth',
+    function($scope, $rootScope, $http, $location, Global, Auth) {
       // This object will contain list of available social buttons to authorize
       $scope.socialButtons = {};
       $scope.socialButtonsCounter = 0;
       $scope.global = Global.getData();
-      $http.get('/get-config')
+      //$http.get('/get-config')
+      $http.post('/get-config', {
+        attemptedUrl: Auth.getAttemptedUrl()
+      })
         .success(function(config) {
           for (var conf in config) {
             // Do not show auth providers that have the value DEFAULT as their clientID
@@ -19,11 +22,13 @@ angular.module('mean.users')
               $scope.socialButtonsCounter += 1;
             }
           }
+        
+          if (config.loginerror) $scope.loginerror = config.loginerror;
         });
     }
   ])
-  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-    function($scope, $rootScope, $http, $location, Global) {
+  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global', 'Auth',
+    function($scope, $rootScope, $http, $location, Global, Auth) {
       // This object will be filled by the form
       $scope.user = {};
       $scope.global = Global.getData();
@@ -62,17 +67,18 @@ angular.module('mean.users')
                 window.location = response.redirect;
               }
             } else {
-              $location.url('/');
+              Auth.redirectToAttemptedUrl();
+              //$location.url('/');
             }
           })
-          .error(function() {
+          .error(function(error) {
             $scope.loginerror = 'Authentication failed.';
           });
       };
     }
   ])
-  .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-    function($scope, $rootScope, $http, $location, Global) {
+  .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global', 'Auth',
+    function($scope, $rootScope, $http, $location, Global, Auth) {
       $scope.user = {};
       $scope.global = Global.getData();
       $scope.global.registerForm = true;
@@ -113,9 +119,11 @@ angular.module('mean.users')
             $scope.registerError = 0;
             $rootScope.user = $scope.user;
             $rootScope.$emit('loggedin');
-            $location.url('/');
+            Auth.redirectToAttemptedUrl();
+            //$location.url('/');
           })
           .error(function(error) {
+              console.log('[register][err]'+error);
             // Error: authentication failed
             if (error === 'Username already taken') {
               $scope.usernameError = error;
@@ -144,8 +152,8 @@ angular.module('mean.users')
       };
     }
   ])
-  .controller('ResetPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', '$stateParams', 'Global',
-    function($scope, $rootScope, $http, $location, $stateParams, Global) {
+  .controller('ResetPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', '$stateParams', 'Global', 'Auth',
+    function($scope, $rootScope, $http, $location, $stateParams, Global, Auth) {
       $scope.user = {};
       $scope.global = Global.getData();
       $scope.global.registerForm = false;
@@ -165,7 +173,8 @@ angular.module('mean.users')
                 window.location = response.redirect;
               }
             } else {
-              $location.url('/');
+              Auth.redirectToAttemptedUrl();
+              //$location.url('/');
             }
           })
           .error(function(error) {

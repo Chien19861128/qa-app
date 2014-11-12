@@ -26,6 +26,8 @@ module.exports = function(Sections, app, auth) {
     app.route('/sections/:sectionSlug/issues')
         //.get(sections.findIssues)
         .post(auth.requiresLogin, sections.createIssue);
+    app.route('/sections/:sectionSlug/issues/:issueSlug/answered')
+        .post(auth.requiresLogin, sections.answeredIssue);
     app.route('/sections/:sectionSlug/issues/:issueSlug/upvotes')
         .post(auth.requiresLogin, sections.upvoteIssue);
     app.route('/sections/:sectionSlug/issues/:issueSlug/downvotes')

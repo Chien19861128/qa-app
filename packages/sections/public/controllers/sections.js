@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('mean.sections').controller('SectionsController', ['$scope', '$stateParams', '$location', '$sce', '$timeout', 'Global', 'Sections', 'UserSections', 'SectionIssues', 'IssueVotes',
-  function($scope, $stateParams, $location, $sce, $timeout, Global, Sections, UserSections, SectionIssues, IssueVotes) {
+angular.module('mean.sections').controller('SectionsController', ['$scope', '$stateParams', '$location', '$sce', '$timeout', 'Global', 'Sections', 'UserSections', 'SectionIssues', 'IssueVotes', 'IssueAnswered',
+  function($scope, $stateParams, $location, $sce, $timeout, Global, Sections, UserSections, SectionIssues, IssueVotes, IssueAnswered) {
     $scope.global = Global.getData();
-    $scope.autorefresh=true;
+    $scope.autorefresh=false;
       
     $scope.hasAuthorization = function(section) {
         if (!section || !section.user_slug) return false;
@@ -11,7 +11,9 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
     };
 
     $scope.create = function(isValid) {
+            
         if (isValid) {
+            $scope.buttonDisabled = true;
             var section = new Sections({
                 title: this.title
             });
@@ -23,10 +25,13 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
         } else {
             $scope.submitted = true;
         }
+            
     };
 
     $scope.createIssue = function(isValid) {
         if (isValid) {
+            $scope.buttonDisabled = true;
+            
             var issue = new SectionIssues({
                 slug: $stateParams.sectionSlug,
                 title: this.newIssue
@@ -40,6 +45,16 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
         } else {
             $scope.submitted = true;
         }
+    };
+
+    $scope.markAnswered = function(issueSlug) {
+        var issue_answered = new IssueAnswered({
+            sectionSlug: $stateParams.sectionSlug,
+            issueSlug: issueSlug
+        });
+        issue_answered.$save(function(response) {
+            window.location.reload();
+        });
     };
 
     $scope.upvoteIssue = function(issueSlug) {
@@ -82,6 +97,7 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
 
     $scope.update = function(isValid) {
         if (isValid) {
+            $scope.buttonDisabled = true;
             var section = $scope.section;
             if (!section.updated) {
                 section.updated = [];
@@ -90,6 +106,7 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
 
             section.$update(function() {
                 $location.path('sections/' + section.slug);
+                $scope.buttonDisabled = false;
             });
         } else {
             $scope.submitted = true;
@@ -97,9 +114,19 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
     };
 
     $scope.find = function() {
-        Sections.query(function(sections) {
-            $scope.sections = sections;
-        });
+        if ($scope.searchSection) {
+            Sections.query({
+                searchSection: $scope.searchSection
+            },function(result) {
+                $scope.sections = result.sections;
+            });
+        } else {
+            Sections.query(function(result) {
+                if ('/'!==result.attemptedUrl) $location.path(result.attemptedUrl);
+                $scope.sections = result.sections;
+            });
+        }
+        
     };
 
     $scope.findUserAll = function() {
@@ -114,6 +141,9 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
         }, function(section) {
             var up_count;
             var down_count;
+            
+            section.answered_issues = [];
+            section.unanswered_issues = [];
             
             for (var i in section.issues) {
                 if (typeof section.issues[i].upvotes !== 'undefined') 
@@ -131,25 +161,41 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
                     section.issues[i].can_upvote = false;
                 else 
                     section.issues[i].can_upvote = true;
+                
                 if (down_count > 0 && section.issues[i].downvotes.indexOf($scope.global.user.slug) > -1) 
                     section.issues[i].can_downvote = false;
                 else 
                     section.issues[i].can_downvote = true;
+                
+                if (section.user_slug === $scope.global.user.slug || section.issues[i].user_slug === $scope.global.user.slug) 
+                    section.issues[i].can_mark_answered = true;
+                else 
+                    section.issues[i].can_mark_answered = false;
+                
+                if (section.issues[i].answered) 
+                    section.answered_issues.push(section.issues[i]);
+                else 
+                    section.unanswered_issues.push(section.issues[i]);
             }
-            //console.log('[autorefresh]'+autorefresh);
+            
             if (false===autorefresh) 
                 $scope.autorefresh=false;
             else 
                 $scope.autorefresh=true;
-            if (!isauto) 
+            
+            if (!isauto) {
                 $scope.section = section;
-            else 
+            } else {
                 $scope.section.issues = section.issues;
+                $scope.section.answered_issues = section.answered_issues;
+                $scope.section.unanswered_issues = section.unanswered_issues;
+            }
+            
             $scope.section.qr_code = $sce.trustAsHtml(section.qr_code);
-        });
         
-        if ($scope.autorefresh===true) 
-            $timeout(function() { $scope.findOne($scope.autorefresh, true); }, 10 * 1000);
+            if ($scope.autorefresh===true) 
+                $timeout(function() { $scope.findOne($scope.autorefresh, true); }, 10 * 1000);
+        });
     };
 
     $scope.findSectionIssues = function() {

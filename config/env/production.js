@@ -4,6 +4,7 @@ module.exports = {
   //db: 'mongodb://localhost/mean-prod',
   db: 'mongodb://nodejitsu:e0b737c9d532fc27e1e753a25a4f823e@troup.mongohq.com:10001/nodejitsudb3924701379',
   port: 80,
+  //mongo troup.mongohq.com:10001/nodejitsudb3924701379 -u nodejitsu -p e0b737c9d532fc27e1e753a25a4f823e
   /**
    * Database options that will be passed directly to mongoose.connect
    * Below are some examples.
@@ -34,12 +35,13 @@ module.exports = {
   facebook: {
     clientID: '1506076563009916',
     clientSecret: 'eba1e517f80f8eb099e6baab0b1bcb57',
-    callbackURL: 'http://askon.nodejitsu.com'
+    callbackURL: 'http://askon.nodejitsu.com/auth/facebook/callback'
+    //callbackURL: 'http://localhost:3000/auth/facebook/callback'
   },
   twitter: {
-    clientID: 'CONSUMER_KEY',
-    clientSecret: 'CONSUMER_SECRET',
-    callbackURL: 'http://localhost:3000/auth/twitter/callback'
+    clientID: 'MCGEgdrqJ3xyKObQW0uFP4ZGW',
+    clientSecret: '3xzNsPWcHm4rHvEbLNFye8PTsjEsdm61Pn6vynoQ3Y2eNeDg5C',
+    callbackURL: 'http://askon.nodejitsu.com/auth/twitter/callback'
   },
   github: {
     clientID: 'APP_ID',

@@ -85,7 +85,8 @@ module.exports = function(app, passport, db) {
     cookie: config.sessionCookie,
     name: config.sessionName,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    attemptedUrl: '/'
   }));
 
   // Dynamic helpers

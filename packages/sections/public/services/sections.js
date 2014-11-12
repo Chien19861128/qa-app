@@ -6,6 +6,7 @@ angular.module('mean.sections').factory('Sections', ['$resource',
     return $resource('sections/:sectionSlug', {
         sectionSlug: '@slug'
     }, {
+	    query: {method:'GET', isArray:false},
         update: {
             method: 'PUT'
         }
@@ -25,6 +26,16 @@ angular.module('mean.sections').factory('SectionIssues', ['$resource',
         sectionSlug: '@slug'
     }, {
 	    get: {method:'GET', isArray:true},
+        update: {method: 'PUT'}
+    });
+}]);
+
+angular.module('mean.sections').factory('IssueAnswered', ['$resource',
+  function($resource) {
+    return $resource('sections/:sectionSlug/issues/:issueSlug/answered', {
+        sectionSlug: '@sectionSlug',
+        issueSlug: '@issueSlug'
+    }, {
         update: {method: 'PUT'}
     });
 }]);

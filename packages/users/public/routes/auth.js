@@ -12,12 +12,14 @@ angular.module('mean.users').config(['$stateProvider',
       $http.get('/loggedin').success(function(user) {
         // Authenticated
         if (user !== '0') {
+            console.log('[checkLoggedOut]Authenticated');
           $timeout(deferred.reject);
-          $location.url('/login');
+          $location.url('/auth/login');
         }
 
         // Not Authenticated
         else $timeout(deferred.resolve);
+            console.log('[checkLoggedOut]Not Authenticated');
       });
 
       return deferred.promise;
