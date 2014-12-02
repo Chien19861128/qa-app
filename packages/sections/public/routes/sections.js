@@ -26,19 +26,19 @@ angular.module('mean.sections').config(['$stateProvider', function($stateProvide
         return deferred.promise;
     };
     
-    var checkAttemptedUrl = function($q, $injector) {
-        var Auth = $injector.get('Auth');
-        Auth.redirectToAttemptedUrl();
-    };
+    //var checkAttemptedUrl = function($q, $injector) {
+    //    var Auth = $injector.get('Auth');
+    //    Auth.redirectToAttemptedUrl();
+    //};
       
     // states for my app
     $stateProvider
     .state('all sections', {
         url: '/',
         templateUrl: 'sections/views/list.html',
-        resolve: {
+        /*resolve: {
             loggedin: checkAttemptedUrl
-        }
+        }*/
     })
     .state('user sections', {
         url: '/:userSlug/sections',
@@ -56,9 +56,9 @@ angular.module('mean.sections').config(['$stateProvider', function($stateProvide
     })
     .state('section by id', {
         url: '/sections/:sectionSlug',
-        templateUrl: 'sections/views/view.html',
-        resolve: {
-            loggedin: checkLoggedin
-        }
+        templateUrl: 'sections/views/view.html'
+        //resolve: {
+        //    loggedin: checkLoggedin
+        //}
     });
 }]);

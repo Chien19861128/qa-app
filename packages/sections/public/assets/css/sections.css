@@ -4,3 +4,135 @@ h1 {
 ul.sections li:not(:last-child) {
 	border-bottom: 1px solid #ccc
 }
+
+.login-form__mini {
+    height: 100%;
+    float: left;
+    width: 100%;
+    padding-left: 26px;
+}
+.login-form__mini .social_wrap {
+    width: 100%;
+    height: 140px;
+    /*margin-top: 10px;*/
+    padding-left: 0;
+    display: block;
+    position:relative;
+}
+
+.register-form .login-form__mini .social_wrap {
+    height: 150px;
+}
+
+.login-form__mini .bigger {
+    height: 140px;
+    /*margin-top: 10px;*/
+}
+
+.login-form__mini .bigger .social {
+    top: inherit;
+    -ms-transform: none; /* IE 9 */
+    -webkit-transform: none; /* Chrome, Safari, Opera */
+    transform: none;
+}
+
+.login-form__mini .social {
+    margin: 0;
+    padding-left: 0;
+    display: block;
+    list-style:none;
+    position:absolute;
+    top:50%;
+    left:0;
+    right:0;
+    -ms-transform: translate(0, -50%); /* IE 9 */
+    -webkit-transform: translate(0, -50%); /* Chrome, Safari, Opera */
+    transform: translate(0, -50%);
+}
+
+.login-form__mini .social_icon {
+    width: 100%;
+    height: 58px;
+    border: 1px solid #e1e1e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    list-style-type: none;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.login-form__mini .social_icon:hover {
+    background: #f1f1f1;
+}
+
+.login-form__mini .social_icon .button {
+    display: block;
+    text-decoration: none;
+    padding: 22px 0 22px 60px;
+    line-height: 1;
+    color: #959595;
+    position: relative;
+}
+
+.login-form__mini .social_icon .button:active {
+    color: #959595;
+}
+
+.login-form__mini .social_icon .button span {
+    font-size: 13px;
+    font-family: 'open_sans_hebrewlight';
+}
+
+.login-form__mini .social_icon .button span:visited {
+    color: #959595;
+}
+
+.login-form__mini .social_icon_in .button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_in.png") no-repeat 40% 40%;
+    width: 50px;
+    height: 47px;
+    top: 9px;
+    left: 0;
+}
+
+.login-form__mini .social_icon_fb .button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_fb.png") no-repeat 40% 40%;
+    width: 41px;
+    height: 40px;
+    top: 9px;
+    left: 8px;
+}
+
+.login-form__mini .social_icon_gh .button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_github.png") no-repeat 40% 40%;
+    width: 40px;
+    height: 40px;
+    top: 9px;
+    left: 8px;
+}
+
+.login-form__mini .social_icon_tw .button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_tw.png") no-repeat 40% 40%;
+    width: 40px;
+    height: 41px;
+    top: 9px;
+    left: 8px;
+}
+
+.login-form__mini .social_icon_google .button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_g+.png") no-repeat 40% 40%;
+    width: 40px;
+    height: 41px;
+    top: 9px;
+    left: 8px;
+}

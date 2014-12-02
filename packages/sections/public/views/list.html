@@ -1,24 +1,49 @@
 <section data-ng-controller="SectionsController" data-ng-init="find()">
-    <div class="col-sm-3 col-xs-12 pull-right">
-        <span data-ng-show="global.authenticated">
+    <div class="col-sm-3 col-xs-12 pull-right" style="padding-left:0px;padding-right:0px;">
+        <span>
             <div style="margin-bottom:12px;">
                 <form name="sectionForm" role="form" data-ng-submit="create(sectionForm.$valid)" novalidate>
-                    <button type="submit" class="btn btn-lg btn-success center-block" ng-disabled="buttonDisabled" style="width:100%;margin-left:0px;margin-right:0px;">New Section</button>
+                    <div class="col-sm-12 col-xs-9" style="padding-right:0px;margin-bottom:8px;" ng-class="{ 'has-error' : submitted && sectionForm.title.$invalid }">
+                        <input name="title" type="text" class="form-control input-md" data-ng-model="title" id="title" placeholder="Your section title" required ng-disabled="buttonDisabled || !global.authenticated">
+                    </div>
+                    <div class="col-sm-12 col-xs-3" style="padding-right:0px;">
+                        <button type="submit" class="btn btn-md btn-success center-block" ng-disabled="buttonDisabled || !global.authenticated" style="width:100%;margin-right:0px;">New</button>
+                    </div>
                 </form>
             </div>
         </span>
+        <!--span data-ng-hide="global.authenticated">
+            <div ng-controller="AuthCtrl" >
+                <div class="row login-form__mini" data-ng-controller="AuthCtrl">
+                    <div class="social_wrap" ng-class="{bigger:socialButtonsCounter > 4 && !global.registerForm}">
+                         <ul class="social">
+                             <li ng-if="socialButtons.hasOwnProperty('facebook')" class="social_icon social_icon_fb">
+                                 <a href="/auth/facebook" class="button">
+                                     <span>Facebook Log In</span>
+                                 </a>
+                             </li>
+                             <li ng-if="socialButtons.hasOwnProperty('twitter')" class="social_icon social_icon_tw">
+                                 <a href="/auth/twitter" class="button">
+                                     <span>Twitter Log In</span>
+                                 </a>
+                             </li>
+                         </ul>
+                     </div>
+                 </div>
+             </div>
+        </span-->
+    </div>
+    <div class="jumbotron col-sm-9 col-xs-12 pull-left">
         <div class="col-sm-12" style="margin-bottom:45px;padding-left:0px;padding-right:0px;">
             <form name="searchForm" role="form" data-ng-submit="find()" novalidate>
-                <div class="col-sm-12 col-xs-8" style="padding-left:0px;padding-right:0px;">
-                    <input name="searchSection" type="text" class="form-control input-md" data-ng-model="searchSection" id="searchSection" placeholder="Type:filter Enter:search" required ng-disabled="buttonDisabled">
+                <div class="col-sm-9 col-xs-8" style="padding-left:0px;padding-right:0px;">
+                    <input name="searchSection" type="text" class="form-control input-md" data-ng-model="searchSection" id="searchSection" placeholder="Type here to filter results" required ng-disabled="buttonDisabled">
                 </div>
-                <div class="col-xs-4 visible-xs">
-                     <button type="submit" class="btn btn-info" ng-disabled="buttonDisabled" style="width:100%;">Search</button>
+                <div class="col-sm-3 col-xs-4">
+                     <button type="submit" class="btn btn-info btn-md" ng-disabled="buttonDisabled" style="width:100%;">Search</button>
                 </div>
             </form>
         </div>
-    </div>
-    <div class="jumbotron col-sm-9 col-xs-12 pull-left">
         <p class="sections unstyled">
             <div>
                 <h3 data-ng-show="!searchSection">Recent Q&A Sections</h3>

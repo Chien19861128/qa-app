@@ -54,10 +54,10 @@ exports.user = function(req, res, next, slug) {
 exports.create = function(req, res) {
     var section = new Section(req.body);
     
-    var d = new Date();
+    /*var d = new Date();
     var curr_utc_date = d.getUTCFullYear() + '-' + d.getUTCMonth() + '-' + d.getUTCDate()  + ' ' + d.getUTCHours() + ':' + d.getUTCMinutes() + ':' + d.getUTCSeconds();
         
-    section.title = req.user.name + ' ' + curr_utc_date;
+    section.title = req.user.name + ' ' + curr_utc_date;*/
     section.slug = uslug(section.title);
     section.user_slug = req.user.slug;
             //section.user = req.user;
@@ -160,6 +160,7 @@ exports.all = function(req, res) {
                 error: 'Cannot list the sections'
             });
         }
+        console.log('[all]'+req.session.attemptedUrl);
         var result = {
             attemptedUrl: req.session.attemptedUrl,
             sections: sections

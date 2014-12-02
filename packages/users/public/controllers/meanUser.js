@@ -123,7 +123,6 @@ angular.module('mean.users')
             //$location.url('/');
           })
           .error(function(error) {
-              console.log('[register][err]'+error);
             // Error: authentication failed
             if (error === 'Username already taken') {
               $scope.usernameError = error;

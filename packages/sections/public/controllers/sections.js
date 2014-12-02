@@ -1,9 +1,10 @@
 'use strict';
 
-angular.module('mean.sections').controller('SectionsController', ['$scope', '$stateParams', '$location', '$sce', '$timeout', 'Global', 'Sections', 'UserSections', 'SectionIssues', 'IssueVotes', 'IssueAnswered',
-  function($scope, $stateParams, $location, $sce, $timeout, Global, Sections, UserSections, SectionIssues, IssueVotes, IssueAnswered) {
+angular.module('mean.sections').controller('SectionsController', ['$scope', '$stateParams', '$location', '$sce', '$timeout', 'Global', 'Auth', 'Sections', 'UserSections', 'SectionIssues', 'IssueVotes', 'IssueAnswered',
+  function($scope, $stateParams, $location, $sce, $timeout, Global, Auth, Sections, UserSections, SectionIssues, IssueVotes, IssueAnswered) {
     $scope.global = Global.getData();
-    $scope.autorefresh=false;
+    $scope.autorefresh=false;  
+    //var converter = new Showdown.converter();
       
     $scope.hasAuthorization = function(section) {
         if (!section || !section.user_slug) return false;
@@ -122,11 +123,11 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
             });
         } else {
             Sections.query(function(result) {
+                console.log('[result.attemptedUrl]'+result.attemptedUrl);
                 if ('/'!==result.attemptedUrl) $location.path(result.attemptedUrl);
                 $scope.sections = result.sections;
             });
         }
-        
     };
 
     $scope.findUserAll = function() {
@@ -185,6 +186,7 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
             
             if (!isauto) {
                 $scope.section = section;
+                if (!$scope.global.authenticated) Auth.saveAttemptUrl();
             } else {
                 $scope.section.issues = section.issues;
                 $scope.section.answered_issues = section.answered_issues;
@@ -192,7 +194,7 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
             }
             
             $scope.section.qr_code = $sce.trustAsHtml(section.qr_code);
-        
+            
             if ($scope.autorefresh===true) 
                 $timeout(function() { $scope.findOne($scope.autorefresh, true); }, 10 * 1000);
         });
@@ -205,4 +207,17 @@ angular.module('mean.sections').controller('SectionsController', ['$scope', '$st
             $scope.issues = issues;
         });
     };
-}]);
+}]).directive('markdown', function ($window) {
+   var converter = new $window.Showdown.converter();
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            function renderMarkdown() {
+                var htmlText = converter.makeHtml(scope.$eval(attrs.markdown)  || '');
+                element.html(htmlText);
+            }
+            scope.$watch(attrs.markdown, renderMarkdown);
+            renderMarkdown();
+        }
+    };
+});

@@ -35,8 +35,8 @@ module.exports = {
   facebook: {
     clientID: '1506076563009916',
     clientSecret: 'eba1e517f80f8eb099e6baab0b1bcb57',
-    callbackURL: 'http://askon.nodejitsu.com/auth/facebook/callback'
-    //callbackURL: 'http://localhost:3000/auth/facebook/callback'
+    //callbackURL: 'http://askon.nodejitsu.com/auth/facebook/callback'
+    callbackURL: 'http://localhost:3000/auth/facebook/callback'
   },
   twitter: {
     clientID: 'MCGEgdrqJ3xyKObQW0uFP4ZGW',
